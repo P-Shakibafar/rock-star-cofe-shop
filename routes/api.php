@@ -25,4 +25,6 @@ Route::group( [
 ], function () {
     Route::get( 'products', [ProductController::class, 'index'] )->name( 'products.index' );
     Route::post( 'products', [ProductController::class, 'store'] )->name( 'products.store' );
+    Route::patch( 'products/{product}', [ProductController::class, 'update'] )->name( 'products.update' );
+    Route::delete( 'products/{product}', [ProductController::class, 'destroy'] )->name( 'products.destroy' );
 } );

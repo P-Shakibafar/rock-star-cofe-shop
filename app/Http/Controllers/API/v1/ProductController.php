@@ -75,21 +75,30 @@ class ProductController extends ApiController {
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Product      $product
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update( Request $request, Product $product )
     {
-        //
+        $attributes = $request->validate( [
+            'name'  => 'sometimes|required|string',
+            'price' => 'sometimes|required|regex:/^\d*(\.\d{2})?$/',
+        ] );
+        $product->update( $attributes );
+
+        return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param \App\Models\Product $product
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function destroy( Product $product )
     {
-        //
+        $product->delete();
+
+        return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
 }

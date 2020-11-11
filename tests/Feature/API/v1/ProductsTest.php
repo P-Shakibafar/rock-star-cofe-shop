@@ -46,6 +46,27 @@ class ProductsTest extends TestCase {
     }
 
     /** @test */
+    public function an_admin_can_updated_a_product()
+    {
+        $product  = Product::factory()->create();
+        $response = $this->patchJson( route( 'v1.products.update', $product->id ), $data = [
+            'name'  => 'changed',
+            'price' => 12.25,
+        ] );
+        $response->assertStatus( 204 );
+        $this->assertDatabaseHas( 'products', $data );
+    }
+
+    /** @test */
+    public function an_admin_can_delete_a_product()
+    {
+        $product  = Product::factory()->create();
+        $response = $this->deleteJson( route( 'v1.products.destroy', $product->id ) );
+        $response->assertStatus( 204 );
+        $this->assertDatabaseMissing( 'products', $product->only( 'id' ) );
+    }
+
+    /** @test */
     public function validate_product_request_fields()
     {
         $fields = [
