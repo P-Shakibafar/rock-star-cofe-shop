@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use App\Models\Product;
+use App\Models\Option;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\API\ApiController;
 
-class ProductController extends ApiController {
+class OptionController extends ApiController {
 
     /**
      * Display a listing of the resource.
@@ -16,9 +16,9 @@ class ProductController extends ApiController {
      */
     public function index()
     {
-        $products = Product::all();
+        $options = Option::all();
 
-        return $this->successResponse( $products );
+        return $this->successResponse( $options );
     }
 
     /**
@@ -30,21 +30,23 @@ class ProductController extends ApiController {
     public function store( Request $request )
     {
         $attributes = $request->validate( [
-            'name'  => 'required|string',
-            'price' => 'required|regex:/^\d*(\.\d{2})?$/',
+            'name'     => 'required|string',
+            'values'   => 'required|array',
+            'values.*' => 'string',
         ] );
-        $product    = Product::create( $attributes );
+        $option     = Option::create( ['name' => $attributes['name']] );
+        $option->addValues( $attributes['values'] );
 
-        return $this->successResponse( $product, Response::HTTP_CREATED );
+        return $this->successResponse( $option->load( 'values' ), Response::HTTP_CREATED );
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Product $product
+     * @param \App\Models\Option $option
      * @return \Illuminate\Http\Response
      */
-    public function show( Product $product )
+    public function show( Option $option )
     {
         //
     }
@@ -53,16 +55,16 @@ class ProductController extends ApiController {
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Product      $product
+     * @param \App\Models\Option       $option
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update( Request $request, Product $product )
+    public function update( Request $request, Option $option )
     {
         $attributes = $request->validate( [
             'name'  => 'sometimes|required|string',
             'price' => 'sometimes|required|regex:/^\d*(\.\d{2})?$/',
         ] );
-        $product->update( $attributes );
+        $option->update( $attributes );
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
@@ -70,13 +72,13 @@ class ProductController extends ApiController {
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Product $product
+     * @param \App\Models\Option $option
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy( Product $product )
+    public function destroy( Option $option )
     {
-        $product->delete();
+        $option->delete();
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }

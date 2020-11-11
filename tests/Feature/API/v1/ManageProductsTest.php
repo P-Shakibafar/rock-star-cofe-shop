@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function route;
 
-class ProductsTest extends TestCase {
+class ManageProductsTest extends TestCase {
 
     use RefreshDatabase;
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\v1\OptionController;
 use App\Http\Controllers\API\v1\ProductController;
 
 /*
@@ -23,8 +24,12 @@ Route::group( [
     'prefix'    => 'v1',
     'as'        => 'v1.',
 ], function () {
+    // Product Routes
     Route::get( 'products', [ProductController::class, 'index'] )->name( 'products.index' );
     Route::post( 'products', [ProductController::class, 'store'] )->name( 'products.store' );
     Route::patch( 'products/{product}', [ProductController::class, 'update'] )->name( 'products.update' );
     Route::delete( 'products/{product}', [ProductController::class, 'destroy'] )->name( 'products.destroy' );
+    // Product Routes
+    Route::post( 'options', [OptionController::class, 'store'] )->name( 'options.store' );
+
 } );
