@@ -28,4 +28,15 @@ class OptionsTest extends TestCase {
         $option->addValues( $optionValues );
         $this->assertEquals( 3, $option->values()->count() );
     }
+
+    /** @test */
+    public function it_can_remove_values()
+    {
+        $option = Option::factory()->create();
+        $option->addValues( Arr::flatten( OptionValue::factory( 4 )->raw() ) );
+        $optionValues = Arr::flatten( $option->values()->get( 'value' )->toArray() );
+        $deletedValue = $optionValues[0];
+        $option->removeValues( [$deletedValue] );
+        $this->assertEquals( 3, $option->values()->count() );
+    }
 }

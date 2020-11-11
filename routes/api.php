@@ -30,6 +30,7 @@ Route::group( [
     Route::patch( 'products/{product}', [ProductController::class, 'update'] )->name( 'products.update' );
     Route::delete( 'products/{product}', [ProductController::class, 'destroy'] )->name( 'products.destroy' );
     // Product Routes
+    Route::get( 'options', [OptionController::class, 'index'] )->name( 'options.index' );
     Route::post( 'options', [OptionController::class, 'store'] )->name( 'options.store' );
-
+    Route::patch( 'options/{option}', [OptionController::class, 'update'] )->name( 'options.update' );
 } );

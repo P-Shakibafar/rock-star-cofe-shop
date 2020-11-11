@@ -8,8 +8,8 @@ use App\Models\OptionValue;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use function dd;
 use function route;
+use function array_push;
 use function array_merge;
 
 class ManageOptionsTest extends TestCase {
@@ -26,15 +26,22 @@ class ManageOptionsTest extends TestCase {
     protected array $jsonStructureAll = [
         'data' => [
             '*' => [
-                'id', 'name',
+                'id', 'name', 'values' => [
+                    '*' => [
+                        'value',
+                    ],
+                ],
             ],
         ],
     ];
 
-//    /** @test */
+    /** @test */
     public function an_admin_can_see_all_option()
     {
-        Option::factory( 3 )->create();
+        [$option1, $option2, $option3] = Option::factory( 3 )->create();
+        $option1->addValues( Arr::flatten( OptionValue::factory( 4 )->raw() ) );
+        $option2->addValues( Arr::flatten( OptionValue::factory( 2 )->raw() ) );
+        $option3->addValues( Arr::flatten( OptionValue::factory( 3 )->raw() ) );
         $response = $this->getJson( route( 'v1.options.index' ) );
         $response->assertStatus( Response::HTTP_OK );
         $response->assertJsonStructure( $this->jsonStructureAll );
@@ -56,18 +63,26 @@ class ManageOptionsTest extends TestCase {
         $this->assertEquals( 3, Option::latest()->first()->values()->count() );
     }
 
-//    /** @test */
+    /** @test */
     public function an_admin_can_updated_a_option()
     {
-        $option   = Option::factory()->create();
+        $option = Option::factory()->create();
+        $option->addValues( Arr::flatten( OptionValue::factory( 4 )->raw() ) );
+        $optionValues = Arr::flatten( $option->values()->get( 'value' )->toArray() );
+        $deletedValue = $optionValues[0];
+        unset( $optionValues[0] );
+        array_push( $optionValues, $addedValue = OptionValue::factory()->raw()['value'] );
         $response = $this->patchJson( route( 'v1.options.update', $option->id ), $data = [
-            'name' => 'changed',
+            'name'   => 'changed',
+            'values' => $optionValues,
         ] );
         $response->assertStatus( 204 );
-        $this->assertDatabaseHas( 'options', $data );
+        $this->assertDatabaseHas( 'options', ['name' => 'changed'] );
+        $this->assertFalse( $option->fresh()->values->contains( 'value', $deletedValue ) );
+        $this->assertTrue( $option->fresh()->values->contains( 'value', $addedValue ) );
     }
 
-//    /** @test */
+    //    /** @test */
     public function an_admin_can_delete_a_option()
     {
         $option   = Option::factory()->create();
@@ -76,7 +91,7 @@ class ManageOptionsTest extends TestCase {
         $this->assertDatabaseMissing( 'options', $option->only( 'id' ) );
     }
 
-//    /** @test */
+    //    /** @test */
     public function validate_option_request_fields()
     {
         $fields = [

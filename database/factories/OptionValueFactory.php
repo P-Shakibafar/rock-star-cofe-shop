@@ -22,7 +22,7 @@ class OptionValueFactory extends Factory {
     public function definition()
     {
         return [
-            'value' => $this->faker->monthName,
+            'value' => $this->faker->unique()->firstName,
         ];
     }
 }

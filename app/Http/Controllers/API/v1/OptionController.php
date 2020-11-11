@@ -61,10 +61,12 @@ class OptionController extends ApiController {
     public function update( Request $request, Option $option )
     {
         $attributes = $request->validate( [
-            'name'  => 'sometimes|required|string',
-            'price' => 'sometimes|required|regex:/^\d*(\.\d{2})?$/',
+            'name'     => 'required|string',
+            'values'   => 'required|array',
+            'values.*' => 'string',
         ] );
-        $option->update( $attributes );
+        $option->update( ['name' => $attributes['name']] );
+        $option->saveValues( $attributes['values'] );
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
