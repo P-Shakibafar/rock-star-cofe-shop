@@ -82,16 +82,17 @@ class ManageOptionsTest extends TestCase {
         $this->assertTrue( $option->fresh()->values->contains( 'value', $addedValue ) );
     }
 
-    //    /** @test */
+    /** @test */
     public function an_admin_can_delete_a_option()
     {
-        $option   = Option::factory()->create();
+        $option = Option::factory()->create();
+        $option->addValues( Arr::flatten( OptionValue::factory( 4 )->raw() ) );
         $response = $this->deleteJson( route( 'v1.options.destroy', $option->id ) );
         $response->assertStatus( 204 );
         $this->assertDatabaseMissing( 'options', $option->only( 'id' ) );
     }
 
-    //    /** @test */
+    /** @test */
     public function validate_option_request_fields()
     {
         $fields = [
