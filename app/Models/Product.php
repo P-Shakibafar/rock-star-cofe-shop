@@ -17,7 +17,7 @@ class Product extends Model {
 
     public function options()
     {
-        return $this->belongsToMany( Option::class );
+        return $this->belongsToMany( Option::class )->withTimestamps();
     }
 
     public function removeOption( Option $option )
