@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\v1\OptionController;
 use App\Http\Controllers\API\v1\ProductController;
+use App\Http\Controllers\API\v1\ProductOptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,9 @@ Route::group( [
     Route::post( 'products', [ProductController::class, 'store'] )->name( 'products.store' );
     Route::patch( 'products/{product}', [ProductController::class, 'update'] )->name( 'products.update' );
     Route::delete( 'products/{product}', [ProductController::class, 'destroy'] )->name( 'products.destroy' );
+    // Product option adding Routes
+    Route::post( 'products/{product}/addOption', [ProductOptionController::class, 'store'] )->name( 'products.addOption' );
+    Route::delete( 'products/{product}/removeOption', [ProductOptionController::class, 'destroy'] )->name( 'products.removeOption' );
     // Product Routes
     Route::get( 'options', [OptionController::class, 'index'] )->name( 'options.index' );
     Route::post( 'options', [OptionController::class, 'store'] )->name( 'options.store' );
