@@ -37,5 +37,6 @@ Route::group( [
     Route::patch( 'options/{option}', [OptionController::class, 'update'] )->name( 'options.update' );
     Route::delete( 'options/{option}', [OptionController::class, 'destroy'] )->name( 'options.destroy' );
     // Order Routes
+    Route::get( 'orders', [OrderController::class, 'index'] )->name( 'orders.index' );
     Route::post( 'orders', [OrderController::class, 'store'] )->name( 'orders.store' );
 } );

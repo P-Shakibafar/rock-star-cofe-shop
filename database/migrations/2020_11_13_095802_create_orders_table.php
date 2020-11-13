@@ -16,7 +16,7 @@ class CreateOrdersTable extends Migration {
     {
         Schema::create( 'orders', function ( Blueprint $table ) {
             $table->id();
-            $table->string( 'number' );
+            $table->string( 'number' )->unique();
             $table->enum( 'status', Order::STATUS_LIST )->default( Order::WAITING );
             $table->foreignId( 'user_id' )->constrained( 'users' )->cascadeOnDelete();
             $table->timestamps();

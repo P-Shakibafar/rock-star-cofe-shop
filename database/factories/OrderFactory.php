@@ -25,6 +25,7 @@ class OrderFactory extends Factory {
     {
         return [
             'number'  => generateOrderNumber(),
+            'status'  => Order::WAITING,
             'user_id' => User::factory(),
         ];
     }

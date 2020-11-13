@@ -6,6 +6,7 @@ use DB;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Resources\OrderResource;
 use App\Http\Controllers\API\ApiController;
 use function auth;
 use function generateOrderNumber;
@@ -15,11 +16,13 @@ class OrderController extends ApiController {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        //
+        $orders = Order::where( 'user_id', auth()->id() )->paginate( 5 );
+
+        return OrderResource::collection( $orders );
     }
 
     /**
@@ -64,7 +67,7 @@ class OrderController extends ApiController {
             return $newOrder;
         } );
 
-        return $this->successResponse( $order->load( ['user', 'items','items.product'] ), Response::HTTP_CREATED );
+        return $this->successResponse( $order->load( ['user', 'items', 'items.product'] ), Response::HTTP_CREATED );
     }
 
     /**
