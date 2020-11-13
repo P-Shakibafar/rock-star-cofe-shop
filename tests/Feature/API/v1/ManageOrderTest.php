@@ -95,4 +95,43 @@ class ManageOrderTest extends TestCase {
         $response->assertSee( $order->number );
         $this->assertCount( 2, $order->items );
     }
+
+    /** @test */
+    public function an_admin_can_change_order_status()
+    {
+        $order = Order::factory()->create();
+        $order->addItem( OrderItem::factory()->raw() );
+        $order->addItem( OrderItem::factory()->raw() );
+        $response = $this->patchJson( route( 'v1.orders.update', $order->id ), [
+            'status' => Order::READY,
+        ] );
+        $response->assertStatus( Response::HTTP_NO_CONTENT );
+        $this->assertEquals( Order::READY, $order->fresh()->status );
+    }
+
+    /** @test */
+    public function a_user_can_delete_own_order_when_status_is_waiting()
+    {
+        $user  = User::factory()->create();
+        $order = Order::factory()->create( ['user_id' => $user->id] );
+        $order->addItem( OrderItem::factory()->raw() );
+        $order->addItem( OrderItem::factory()->raw() );
+        $response = $this->actingAs( $user )
+                         ->deleteJson( route( 'v1.orders.destroy', $order->id ) );
+        $response->assertStatus( Response::HTTP_NO_CONTENT );
+        $this->assertDatabaseMissing( 'orders', $order->only( 'id' ) );
+    }
+
+    /** @test */
+    public function a_user_can_not_delete_own_order_when_status_is_not_waiting()
+    {
+        $user  = User::factory()->create();
+        $order = Order::factory()->create( ['user_id' => $user->id, 'status' => Order::READY] );
+        $order->addItem( OrderItem::factory()->raw() );
+        $order->addItem( OrderItem::factory()->raw() );
+        $response = $this->actingAs( $user )
+                         ->deleteJson( route( 'v1.orders.destroy', $order->id ) );
+        $response->assertStatus( Response::HTTP_BAD_REQUEST );
+        $this->assertDatabaseHas( 'orders', $order->only( 'id' ) );
+    }
 }

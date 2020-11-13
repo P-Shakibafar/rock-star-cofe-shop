@@ -39,5 +39,7 @@ Route::group( [
     // Order Routes
     Route::get( 'orders', [OrderController::class, 'index'] )->name( 'orders.index' );
     Route::post( 'orders', [OrderController::class, 'store'] )->name( 'orders.store' );
+    Route::patch( 'orders/{order}', [OrderController::class, 'update'] )->name( 'orders.update' );
     Route::get( 'orders/{order}', [OrderController::class, 'show'] )->name( 'orders.show' );
+    Route::delete( 'orders/{order}', [OrderController::class, 'destroy'] )->name( 'orders.destroy' );
 } );

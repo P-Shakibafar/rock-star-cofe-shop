@@ -96,22 +96,34 @@ class OrderController extends ApiController {
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int                      $id
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Order        $order
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update( Request $request, $id )
+    public function update( Request $request, Order $order )
     {
-        //
+        $attributes = $request->validate( [
+            'status' => 'required|string',
+        ] );
+        $order->update( ['status' => $attributes['status']] );
+
+        return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Order $order
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public function destroy( $id )
+    public function destroy( Order $order )
     {
-        //
+        if( $order->status === Order::WAITING ) {
+            $order->delete();
+
+            return $this->successResponse( [], Response::HTTP_NO_CONTENT );
+        }
+
+        return $this->errorResponse( 'when order status is not waiting can not delete.', Response::HTTP_BAD_REQUEST );
     }
 }
