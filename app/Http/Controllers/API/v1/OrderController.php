@@ -71,24 +71,14 @@ class OrderController extends ApiController {
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Order $order
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show( $id )
+    public function show( Order $order )
     {
-        //
+        return $this->successResponse( OrderResource::make( $order ) );
     }
 
     /**

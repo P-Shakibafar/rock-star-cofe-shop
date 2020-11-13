@@ -39,4 +39,5 @@ Route::group( [
     // Order Routes
     Route::get( 'orders', [OrderController::class, 'index'] )->name( 'orders.index' );
     Route::post( 'orders', [OrderController::class, 'store'] )->name( 'orders.store' );
+    Route::get( 'orders/{order}', [OrderController::class, 'show'] )->name( 'orders.show' );
 } );

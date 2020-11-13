@@ -80,4 +80,19 @@ class ManageOrderTest extends TestCase {
         $order = Order::latest()->first();
         $this->assertCount( 3, $order->items );
     }
+
+    /** @test */
+    public function a_user_can_see_an_order()
+    {
+        $user  = User::factory()->create();
+        $order = Order::factory()->create( ['user_id' => $user->id] );
+        $order->addItem( OrderItem::factory()->raw() );
+        $order->addItem( OrderItem::factory()->raw() );
+        $response = $this->actingAs( $user )
+                         ->getJson( route( 'v1.orders.show', $order->id ) );
+        $response->assertStatus( Response::HTTP_OK );
+        $response->assertJsonStructure( ['data' => $this->jsonStructureOrder] );
+        $response->assertSee( $order->number );
+        $this->assertCount( 2, $order->items );
+    }
 }
