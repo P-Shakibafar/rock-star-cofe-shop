@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use DB;
 use App\Models\Option;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -34,8 +35,12 @@ class OptionController extends ApiController {
             'values'   => 'required|array',
             'values.*' => 'string',
         ] );
-        $option     = Option::create( ['name' => $attributes['name']] );
-        $option->addValues( $attributes['values'] );
+        $option     = DB::transaction( function () use ( $attributes ) {
+            $option = Option::create( ['name' => $attributes['name']] );
+            $option->addValues( $attributes['values'] );
+
+            return $option;
+        } );
 
         return $this->successResponse( $option->load( 'values' ), Response::HTTP_CREATED );
     }
@@ -65,8 +70,10 @@ class OptionController extends ApiController {
             'values'   => 'required|array',
             'values.*' => 'string',
         ] );
-        $option->update( ['name' => $attributes['name']] );
-        $option->saveValues( $attributes['values'] );
+        DB::transaction( function () use ( $option, $attributes ) {
+            $option->update( ['name' => $attributes['name']] );
+            $option->saveValues( $attributes['values'] );
+        } );
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
