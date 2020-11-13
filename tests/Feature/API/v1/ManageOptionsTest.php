@@ -19,7 +19,7 @@ class ManageOptionsTest extends TestCase {
     protected array $jsonStructure    = [
         'id', 'name', 'values' => [
             '*' => [
-                'value',
+                'id', 'value',
             ],
         ],
     ];
@@ -28,7 +28,7 @@ class ManageOptionsTest extends TestCase {
             '*' => [
                 'id', 'name', 'values' => [
                     '*' => [
-                        'value',
+                        'id', 'value',
                     ],
                 ],
             ],

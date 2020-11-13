@@ -6,6 +6,7 @@ use DB;
 use App\Models\Option;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Resources\OptionResource;
 use App\Http\Controllers\API\ApiController;
 
 class OptionController extends ApiController {
@@ -19,7 +20,7 @@ class OptionController extends ApiController {
     {
         $options = Option::all();
 
-        return $this->successResponse( $options );
+        return $this->successResponse( OptionResource::collection( $options ) );
     }
 
     /**
@@ -27,6 +28,7 @@ class OptionController extends ApiController {
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function store( Request $request )
     {
@@ -36,13 +38,13 @@ class OptionController extends ApiController {
             'values.*' => 'string',
         ] );
         $option     = DB::transaction( function () use ( $attributes ) {
-            $option = Option::create( ['name' => $attributes['name']] );
-            $option->addValues( $attributes['values'] );
+            $newOption = Option::create( ['name' => $attributes['name']] );
+            $newOption->addValues( $attributes['values'] );
 
-            return $option;
+            return $newOption;
         } );
 
-        return $this->successResponse( $option->load( 'values' ), Response::HTTP_CREATED );
+        return $this->successResponse( OptionResource::make( $option ), Response::HTTP_CREATED );
     }
 
     /**
@@ -62,6 +64,7 @@ class OptionController extends ApiController {
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Option       $option
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function update( Request $request, Option $option )
     {

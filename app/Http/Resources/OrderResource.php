@@ -15,9 +15,10 @@ class OrderResource extends JsonResource {
     public function toArray( $request )
     {
         return [
+            'id'     => $this->id,
             'number' => $this->number,
             'status' => $this->status,
-            'user'   => $this->user,
+            'user'   => UserResource::make( $this->user ),
             'items'  => ItemResource::collection( $this->items ),
         ];
     }

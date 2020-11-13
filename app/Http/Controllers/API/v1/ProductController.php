@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Resources\ProductResource;
 use App\Http\Controllers\API\ApiController;
 
 class ProductController extends ApiController {
@@ -18,7 +19,7 @@ class ProductController extends ApiController {
     {
         $products = Product::all();
 
-        return $this->successResponse( $products );
+        return $this->successResponse( ProductResource::collection( $products ) );
     }
 
     /**
@@ -35,7 +36,7 @@ class ProductController extends ApiController {
         ] );
         $product    = Product::create( $attributes );
 
-        return $this->successResponse( $product, Response::HTTP_CREATED );
+        return $this->successResponse( ProductResource::make( $product ), Response::HTTP_CREATED );
     }
 
     /**

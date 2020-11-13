@@ -3,7 +3,10 @@
 namespace Tests\Feature\API\v1;
 
 use Tests\TestCase;
+use App\Models\Option;
 use App\Models\Product;
+use Illuminate\Support\Arr;
+use App\Models\OptionValue;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function route;
@@ -14,11 +17,31 @@ class ManageProductsTest extends TestCase {
 
     protected array $jsonStructure    = [
         'id', 'name', 'price',
+        'options' => [
+            '*' => [
+                'id', 'name',
+                'values' => [
+                    '*' => [
+                        'id', 'value',
+                    ],
+                ],
+            ],
+        ],
     ];
     protected array $jsonStructureAll = [
         'data' => [
             '*' => [
                 'id', 'name', 'price',
+                'options' => [
+                    '*' => [
+                        'id', 'name',
+                        'values' => [
+                            '*' => [
+                                'id', 'value',
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ],
     ];
@@ -26,11 +49,16 @@ class ManageProductsTest extends TestCase {
     /** @test */
     public function an_admin_can_see_all_product()
     {
-        Product::factory( 3 )->create();
+        [$product1, $product2] = Product::factory( 2 )->create();
+        $option       = Option::factory()->create();
+        $optionValues = Arr::flatten( OptionValue::factory( 2 )->raw() );
+        $option->addValues( $optionValues );
+        $product1->addOption( $option );
+        $product2->addOption( $option );
         $response = $this->getJson( route( 'v1.products.index' ) );
         $response->assertStatus( Response::HTTP_OK );
         $response->assertJsonStructure( $this->jsonStructureAll );
-        $this->assertCount( 3, Product::all() );
+        $this->assertCount( 2, Product::all() );
     }
 
     /** @test */
