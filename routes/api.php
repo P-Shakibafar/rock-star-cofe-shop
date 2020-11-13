@@ -2,9 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\v1\OptionController;
-use App\Http\Controllers\API\v1\ProductController;
-use App\Http\Controllers\API\v1\ProductOptionController;
+use App\Http\Controllers\API\v1\{OrderController, OptionController, ProductController, ProductOptionController,};
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +36,6 @@ Route::group( [
     Route::post( 'options', [OptionController::class, 'store'] )->name( 'options.store' );
     Route::patch( 'options/{option}', [OptionController::class, 'update'] )->name( 'options.update' );
     Route::delete( 'options/{option}', [OptionController::class, 'destroy'] )->name( 'options.destroy' );
+    // Order Routes
+    Route::post( 'orders', [OrderController::class, 'store'] )->name( 'orders.store' );
 } );
