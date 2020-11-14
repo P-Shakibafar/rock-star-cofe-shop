@@ -73,12 +73,12 @@ class ManageOrderTest extends TestCase {
     public function a_user_can_create_an_order()
     {
         $attributes['items'] = OrderItem:: factory( 3 )->raw( ['order_id' => NULL, 'total' => NULL] );
-        $this->actingAs( User::factory()->create() )
-             ->postJson( route( 'v1.orders.store' ), $attributes )
-             ->assertStatus( 201 )
-             ->assertJsonStructure( [
-                 'data' => $this->jsonStructureOrder,
-             ] );
+        $response            = $this->actingAs( User::factory()->create() )
+                                    ->postJson( route( 'v1.orders.store' ), $attributes );
+        $response->assertStatus( 201 );
+        $response->assertJsonStructure( [
+            'data' => $this->jsonStructureOrder,
+        ] );
         $order = Order::latest()->first();
         $this->assertCount( 3, $order->items );
     }
@@ -104,9 +104,10 @@ class ManageOrderTest extends TestCase {
         $order = Order::factory()->create();
         $order->addItem( OrderItem::factory()->raw() );
         $order->addItem( OrderItem::factory()->raw() );
-        $response = $this->patchJson( route( 'v1.orders.update', $order->id ), [
-            'status' => Order::READY,
-        ] );
+        $response = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
+                         ->patchJson( route( 'v1.orders.update', $order->id ), [
+                             'status' => Order::READY,
+                         ] );
         $response->assertStatus( Response::HTTP_NO_CONTENT );
         $this->assertEquals( Order::READY, $order->fresh()->status );
     }
@@ -118,9 +119,10 @@ class ManageOrderTest extends TestCase {
         $order = Order::factory()->create();
         $order->addItem( OrderItem::factory()->raw() );
         $order->addItem( OrderItem::factory()->raw() );
-        $response = $this->patchJson( route( 'v1.orders.update', $order->id ), [
-            'status' => Order::READY,
-        ] );
+        $response = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
+                         ->patchJson( route( 'v1.orders.update', $order->id ), [
+                             'status' => Order::READY,
+                         ] );
         $response->assertStatus( Response::HTTP_NO_CONTENT );
         Mail::assertQueued( OrderStatusUpdateMail::class );
         $this->assertEquals( Order::READY, $order->fresh()->status );

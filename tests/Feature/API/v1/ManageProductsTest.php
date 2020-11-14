@@ -3,6 +3,7 @@
 namespace Tests\Feature\API\v1;
 
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Option;
 use App\Models\Product;
 use Illuminate\Support\Arr;
@@ -47,7 +48,7 @@ class ManageProductsTest extends TestCase {
     ];
 
     /** @test */
-    public function an_admin_can_see_all_product()
+    public function an_admin_or_user_can_see_all_product()
     {
         [$product1, $product2] = Product::factory( 2 )->create();
         $option       = Option::factory()->create();
@@ -55,7 +56,8 @@ class ManageProductsTest extends TestCase {
         $option->addValues( $optionValues );
         $product1->addOption( $option );
         $product2->addOption( $option );
-        $response = $this->getJson( route( 'v1.products.index' ) );
+        $response = $this->actingAs( User::factory()->create() )
+                         ->getJson( route( 'v1.products.index' ) );
         $response->assertStatus( Response::HTTP_OK );
         $response->assertJsonStructure( $this->jsonStructureAll );
         $this->assertCount( 2, Product::all() );
@@ -65,7 +67,8 @@ class ManageProductsTest extends TestCase {
     public function an_admin_can_create_a_product()
     {
         $attributes = Product::factory()->raw();
-        $response   = $this->postJson( route( 'v1.products.store' ), $attributes );
+        $response   = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
+                           ->postJson( route( 'v1.products.store' ), $attributes );
         $response->assertStatus( Response::HTTP_CREATED );
         $response->assertJsonStructure( [
             'data' => $this->jsonStructure,
@@ -77,10 +80,11 @@ class ManageProductsTest extends TestCase {
     public function an_admin_can_updated_a_product()
     {
         $product  = Product::factory()->create();
-        $response = $this->patchJson( route( 'v1.products.update', $product->id ), $data = [
-            'name'  => 'changed',
-            'price' => 12,
-        ] );
+        $response = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
+                         ->patchJson( route( 'v1.products.update', $product->id ), $data = [
+                             'name'  => 'changed',
+                             'price' => 12,
+                         ] );
         $response->assertStatus( 204 );
         $this->assertDatabaseHas( 'products', $data );
     }
@@ -89,7 +93,8 @@ class ManageProductsTest extends TestCase {
     public function an_admin_can_delete_a_product()
     {
         $product  = Product::factory()->create();
-        $response = $this->deleteJson( route( 'v1.products.destroy', $product->id ) );
+        $response = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
+                         ->deleteJson( route( 'v1.products.destroy', $product->id ) );
         $response->assertStatus( 204 );
         $this->assertDatabaseMissing( 'products', $product->only( 'id' ) );
     }
@@ -109,7 +114,8 @@ class ManageProductsTest extends TestCase {
     public function aProductRequires( $field )
     {
         $attributes = Product::factory()->raw( [$field => ''] );
-        $response   = $this->postJson( route( 'v1.products.store' ), $attributes );
+        $response   = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
+                           ->postJson( route( 'v1.products.store' ), $attributes );
         $response->assertStatus( 422 );
         $response->assertJsonStructure( ['errors' => [$field]] );
     }
