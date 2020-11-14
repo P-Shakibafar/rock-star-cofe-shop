@@ -21,16 +21,6 @@ class OrderItemController extends ApiController {
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
@@ -53,17 +43,6 @@ class OrderItemController extends ApiController {
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit( $id )
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
@@ -77,15 +56,12 @@ class OrderItemController extends ApiController {
             return $this->errorResponse( 'when order status is not waiting can not updating.', Response::HTTP_BAD_REQUEST );
         }
         $attributes = $request->validate( [
-            'quantity'        => ['required', 'integer'],
-            'options'         => ['required', 'array'],
+            'quantity'        => ['sometimes', 'required', 'integer'],
+            'options'         => ['sometimes', 'required', 'array'],
             'options.*.name'  => ['required', 'string', 'exists:options,name'],
             'options.*.value' => ['required', 'string', 'exists:option_values,value'],
         ] );
-        $orderItem->update( [
-            'quantity' => $attributes['quantity'],
-            'options'  => $attributes['options'],
-        ] );
+        $orderItem->update( $attributes );
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
@@ -93,12 +69,19 @@ class OrderItemController extends ApiController {
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Order     $order
+     * @param \App\Models\OrderItem $orderItem
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public function destroy( $id )
+    public function destroy( Order $order, OrderItem $orderItem )
     {
-        //
+        if( !$order->canBeUpdate() ) {
+            return $this->errorResponse( 'when order status is not waiting can not deleting.', Response::HTTP_BAD_REQUEST );
+        }
+        $orderItem->delete();
+
+        return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
 
 }

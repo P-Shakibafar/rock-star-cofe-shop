@@ -48,4 +48,5 @@ Route::group( [
     Route::delete( 'orders/{order}', [OrderController::class, 'destroy'] )->name( 'orders.destroy' );
     // Order Item Routes
     Route::patch( 'orders/{order}/orderItems/{orderItem}', [OrderItemController::class, 'update'] )->name( 'orderItems.update' );
+    Route::delete( 'orders/{order}/orderItems/{orderItem}', [OrderItemController::class, 'destroy'] )->name( 'orderItems.destroy' );
 } );

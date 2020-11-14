@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Response;
+use App\Mail\OrderStatusUpdateMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function route;
 
@@ -106,6 +108,21 @@ class ManageOrderTest extends TestCase {
             'status' => Order::READY,
         ] );
         $response->assertStatus( Response::HTTP_NO_CONTENT );
+        $this->assertEquals( Order::READY, $order->fresh()->status );
+    }
+
+    /** @test */
+    public function after_change_order_status_send_email_to_user()
+    {
+        Mail::fake();
+        $order = Order::factory()->create();
+        $order->addItem( OrderItem::factory()->raw() );
+        $order->addItem( OrderItem::factory()->raw() );
+        $response = $this->patchJson( route( 'v1.orders.update', $order->id ), [
+            'status' => Order::READY,
+        ] );
+        $response->assertStatus( Response::HTTP_NO_CONTENT );
+        Mail::assertQueued( OrderStatusUpdateMail::class );
         $this->assertEquals( Order::READY, $order->fresh()->status );
     }
 

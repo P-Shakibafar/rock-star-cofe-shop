@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Mail\OrderStatusUpdateMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model {
@@ -15,8 +17,18 @@ class Order extends Model {
     const PREPARATION = 'preparation';
     const READY       = 'ready';
     const DELIVERED   = 'delivered';
-
     protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::updating( function ( $order ) {
+            $oldData = $order->getOriginal();
+            if( $order['status'] != $oldData['status'] ) {
+                Mail::to( $order->user->email )->queue( new OrderStatusUpdateMail( $order->status ) );
+            }
+        } );
+    }
 
     public function addItem( array $attributes )
     {
