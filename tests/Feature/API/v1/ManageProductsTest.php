@@ -79,7 +79,7 @@ class ManageProductsTest extends TestCase {
         $product  = Product::factory()->create();
         $response = $this->patchJson( route( 'v1.products.update', $product->id ), $data = [
             'name'  => 'changed',
-            'price' => 12.25,
+            'price' => 12,
         ] );
         $response->assertStatus( 204 );
         $this->assertDatabaseHas( 'products', $data );

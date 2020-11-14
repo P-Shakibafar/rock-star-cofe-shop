@@ -32,7 +32,7 @@ class ProductController extends ApiController {
     {
         $attributes = $request->validate( [
             'name'  => 'required|string',
-            'price' => 'required|regex:/^\d*(\.\d{2})?$/',
+            'price' => 'required|integer',
         ] );
         $product    = Product::create( $attributes );
 
@@ -61,7 +61,7 @@ class ProductController extends ApiController {
     {
         $attributes = $request->validate( [
             'name'  => 'sometimes|required|string',
-            'price' => 'sometimes|required|regex:/^\d*(\.\d{2})?$/',
+            'price' => 'sometimes|required|integer',
         ] );
         $product->update( $attributes );
 

@@ -73,7 +73,7 @@ class OrderItemController extends ApiController {
      */
     public function update( Request $request, Order $order, OrderItem $orderItem )
     {
-        if( $order->canBeUpdate() ) {
+        if( !$order->canBeUpdate() ) {
             return $this->errorResponse( 'when order status is not waiting can not updating.', Response::HTTP_BAD_REQUEST );
         }
         $attributes = $request->validate( [

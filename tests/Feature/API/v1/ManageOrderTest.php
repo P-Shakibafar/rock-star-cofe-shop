@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use function dd;
 use function route;
 
 class ManageOrderTest extends TestCase {
@@ -114,7 +113,7 @@ class ManageOrderTest extends TestCase {
     public function a_user_can_delete_own_order_when_status_is_waiting()
     {
         $user  = User::factory()->create();
-        $order = Order::factory()->create( ['user_id' => $user->id] );
+        $order = Order::factory()->create( ['user_id' => $user->id, 'status' => Order::WAITING] );
         $order->addItem( OrderItem::factory()->raw() );
         $order->addItem( OrderItem::factory()->raw() );
         $response = $this->actingAs( $user )

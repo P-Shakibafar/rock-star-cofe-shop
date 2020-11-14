@@ -40,6 +40,6 @@ class Order extends Model {
 
     public function canBeUpdate() : bool
     {
-        return $this->status !== self::WAITING;
+        return $this->status === self::WAITING;
     }
 }

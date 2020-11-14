@@ -39,7 +39,7 @@ class OrderController extends ApiController {
             'items.*'                 => [
                 'quantity'   => ['required', 'integer'],
                 'product_id' => ['required', 'integer', 'exists:products,id'],
-                'unit_price' => ['required', 'regex:/^\d*(\.\d{2})?$/'],
+                'unit_price' => ['required', 'integer'],
                 'options'    => ['required', 'array'],
             ],
             'items.*.options.*.name'  => ['required', 'string', 'exists:options,name'],
@@ -116,12 +116,11 @@ class OrderController extends ApiController {
      */
     public function destroy( Order $order )
     {
-        if( $order->canBeUpdate() ) {
-            $order->delete();
-
-            return $this->successResponse( [], Response::HTTP_NO_CONTENT );
+        if( !$order->canBeUpdate() ) {
+            return $this->errorResponse( 'when order status is not waiting can not delete.', Response::HTTP_BAD_REQUEST );
         }
+        $order->delete();
 
-        return $this->errorResponse( 'when order status is not waiting can not delete.', Response::HTTP_BAD_REQUEST );
+        return $this->successResponse( [], Response::HTTP_NO_CONTENT );
     }
 }
