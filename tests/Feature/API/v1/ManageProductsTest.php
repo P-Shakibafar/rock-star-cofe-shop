@@ -48,6 +48,35 @@ class ManageProductsTest extends TestCase {
     ];
 
     /** @test */
+    public function unauthenticated_user_cannot_manage_products()
+    {
+        $product    = Product::factory()->create();
+        $normalUser = User::factory()->create();
+        $this->getJson( route( 'v1.products.index' ) )
+             ->assertStatus( 401 );
+        $this->postJson( route( 'v1.products.store' ), [] )
+             ->assertStatus( 401 );
+        //        $this->getJson( route( 'v1.products.show', $product->id ) )
+        //             ->assertStatus( 401 );
+        $this->patchJson( route( 'v1.products.update', $product->id ), [] )
+             ->assertStatus( 401 );
+        $this->deleteJson( route( 'v1.products.destroy', $product->id ) )
+             ->assertStatus( 401 );
+        $this->actingAs( $normalUser )
+             ->postJson( route( 'v1.products.store' ), [] )
+             ->assertStatus( 403 );
+        //        $this->actingAs( $normalUser )
+        //             ->getJson( route( 'v1.products.show', $product->id ) )
+        //             ->assertStatus( 403 );
+        $this->actingAs( $normalUser )
+             ->patchJson( route( 'v1.products.update', $product->id ), [] )
+             ->assertStatus( 403 );
+        $this->actingAs( $normalUser )
+             ->deleteJson( route( 'v1.products.destroy', $product->id ) )
+             ->assertStatus( 403 );
+    }
+
+    /** @test */
     public function an_admin_or_user_can_see_all_product()
     {
         [$product1, $product2] = Product::factory( 2 )->create();

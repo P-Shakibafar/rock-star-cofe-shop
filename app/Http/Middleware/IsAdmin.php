@@ -4,11 +4,13 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponser;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use function route;
-use function redirect;
 
 class IsAdmin {
+
+    use ApiResponser;
 
     /**
      * Handle an incoming request.
@@ -23,6 +25,6 @@ class IsAdmin {
             return $next( $request );
         }
 
-        return redirect( route( 'login' ) );
+        return $this->errorResponse( 'Http forbidden.', Response::HTTP_FORBIDDEN );
     }
 }

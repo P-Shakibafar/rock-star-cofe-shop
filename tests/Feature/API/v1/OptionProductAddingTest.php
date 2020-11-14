@@ -14,6 +14,23 @@ class OptionProductAddingTest extends TestCase {
     use RefreshDatabase;
 
     /** @test */
+    public function unauthenticated_user_cannot_manage_product_options()
+    {
+        $product    = Product::factory()->create();
+        $normalUser = User::factory()->create();
+        $this->postJson( route( 'v1.products.addOption', $product->id ), [] )
+             ->assertStatus( 401 );
+        $this->deleteJson( route( 'v1.products.removeOption', $product->id ), [] )
+             ->assertStatus( 401 );
+        $this->actingAs( $normalUser )
+             ->postJson( route( 'v1.products.addOption', $product->id ), [] )
+             ->assertStatus( 403 );
+        $this->actingAs( $normalUser )
+             ->deleteJson( route( 'v1.products.removeOption', $product->id ), [] )
+             ->assertStatus( 403 );
+    }
+
+    /** @test */
     public function an_admin_can_add_an_option_to_product()
     {
         $product  = Product::factory()->create();

@@ -17,6 +17,25 @@ class ManageOrderItemTest extends TestCase {
     use RefreshDatabase;
 
     /** @test */
+    public function unauthenticated_user_cannot_manage_order_items()
+    {
+        $user      = User::factory()->create();
+        $order     = Order::factory()->create( ['user_id' => $user->id, 'status' => Order::WAITING] );
+        $orderItem = $order->addItem( OrderItem::factory()->raw() );
+        $otherUser = User::factory()->create();
+        $this->patchJson( route( 'v1.orderItems.update', [$order->id, $orderItem->id] ), [] )
+             ->assertStatus( 401 );
+        $this->deleteJson( route( 'v1.orderItems.destroy', [$order->id, $orderItem->id] ) )
+             ->assertStatus( 401 );
+        $this->actingAs( $otherUser )
+             ->patchJson( route( 'v1.orderItems.update', [$order->id, $orderItem->id] ), [] )
+             ->assertStatus( 403 );
+        $this->actingAs( $otherUser )
+             ->deleteJson( route( 'v1.orderItems.destroy', [$order->id, $orderItem->id] ) )
+             ->assertStatus( 403 );
+    }
+
+    /** @test */
     public function a_user_can_update_order_item_in_own_order_when_status_is_waiting()
     {
         $user       = User::factory()->create();

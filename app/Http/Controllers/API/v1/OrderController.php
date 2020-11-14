@@ -6,6 +6,7 @@ use DB;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Policies\OrderPolicy;
 use App\Http\Resources\OrderResource;
 use App\Http\Controllers\API\ApiController;
 use function auth;
@@ -73,9 +74,12 @@ class OrderController extends ApiController {
      *
      * @param \App\Models\Order $order
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show( Order $order )
     {
+        $this->authorize( OrderPolicy::SHOW, $order );
+
         return $this->successResponse( OrderResource::make( $order ) );
     }
 
@@ -119,6 +123,7 @@ class OrderController extends ApiController {
         if( !$order->canBeUpdate() ) {
             return $this->errorResponse( 'when order status is not waiting can not delete.', Response::HTTP_BAD_REQUEST );
         }
+        $this->authorize( OrderPolicy::DELETE, $order );
         $order->delete();
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );

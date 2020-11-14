@@ -50,6 +50,33 @@ class ManageOrderTest extends TestCase {
     ];
 
     /** @test */
+    public function unauthenticated_user_cannot_manage_orders()
+    {
+        $user      = User::factory()->create();
+        $order     = Order::factory()->create( ['user_id' => $user->id, 'status' => Order::WAITING] );
+        $otherUser = User::factory()->create();
+        $this->getJson( route( 'v1.orders.index' ) )
+             ->assertStatus( 401 );
+        $this->postJson( route( 'v1.orders.store' ), [] )
+             ->assertStatus( 401 );
+        $this->getJson( route( 'v1.orders.show', $order->id ) )
+             ->assertStatus( 401 );
+        $this->patchJson( route( 'v1.orders.update', $order->id ), [] )
+             ->assertStatus( 401 );
+        $this->deleteJson( route( 'v1.orders.destroy', $order->id ) )
+             ->assertStatus( 401 );
+        $this->actingAs( $otherUser )
+             ->getJson( route( 'v1.orders.show', $order->id ) )
+             ->assertStatus( 403 );
+        $this->actingAs( $user )
+             ->patchJson( route( 'v1.orders.update', $order->id ), [] )
+             ->assertStatus( 403 );
+        $this->actingAs( $otherUser )
+             ->deleteJson( route( 'v1.orders.destroy', $order->id ) )
+             ->assertStatus( 403 );
+    }
+
+    /** @test */
     public function a_user_can_see_all_orders()
     {
         $user = User::factory()->create();
