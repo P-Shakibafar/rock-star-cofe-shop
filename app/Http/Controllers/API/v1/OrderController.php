@@ -35,17 +35,15 @@ class OrderController extends ApiController {
     public function store( Request $request )
     {
         $attributes = $request->validate( [
-            'items'   => ['required', 'array'],
-            'items.*' => [
+            'items'                   => ['required', 'array'],
+            'items.*'                 => [
                 'quantity'   => ['required', 'integer'],
-                'product_id' => ['required', 'integer', 'exists:products'],
+                'product_id' => ['required', 'integer', 'exists:products,id'],
                 'unit_price' => ['required', 'regex:/^\d*(\.\d{2})?$/'],
                 'options'    => ['required', 'array'],
-                'options.*'  => [
-                    'name'  => ['string'],
-                    'value' => ['string'],
-                ],
             ],
+            'items.*.options.*.name'  => ['required', 'string', 'exists:options,name'],
+            'items.*.options.*.value' => ['required', 'string', 'exists:option_values,value'],
         ] );
         $order      = DB::transaction( function () use ( $attributes ) {
             $items    = $attributes['items'];
@@ -118,7 +116,7 @@ class OrderController extends ApiController {
      */
     public function destroy( Order $order )
     {
-        if( $order->status === Order::WAITING ) {
+        if( $order->canBeUpdate() ) {
             $order->delete();
 
             return $this->successResponse( [], Response::HTTP_NO_CONTENT );

@@ -2,7 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\v1\{OrderController, OptionController, ProductController, ProductOptionController,};
+use App\Http\Controllers\API\v1\{OrderController,
+    OptionController,
+    OrderItemController,
+    ProductController,
+    ProductOptionController};
 
 /*
 |--------------------------------------------------------------------------
@@ -42,4 +46,6 @@ Route::group( [
     Route::patch( 'orders/{order}', [OrderController::class, 'update'] )->name( 'orders.update' );
     Route::get( 'orders/{order}', [OrderController::class, 'show'] )->name( 'orders.show' );
     Route::delete( 'orders/{order}', [OrderController::class, 'destroy'] )->name( 'orders.destroy' );
+    // Order Item Routes
+    Route::patch( 'orders/{order}/orderItems/{orderItem}', [OrderItemController::class, 'update'] )->name( 'orderItems.update' );
 } );

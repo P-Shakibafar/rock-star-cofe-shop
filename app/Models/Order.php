@@ -37,4 +37,9 @@ class Order extends Model {
     {
         return $this->items()->where( 'id', $item->id )->delete();
     }
+
+    public function canBeUpdate() : bool
+    {
+        return $this->status !== self::WAITING;
+    }
 }
