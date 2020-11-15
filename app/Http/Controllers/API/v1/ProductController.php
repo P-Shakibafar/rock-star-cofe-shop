@@ -36,7 +36,7 @@ class ProductController extends ApiController {
         ] );
         $product    = Product::create( $attributes );
 
-        return $this->successResponse( ProductResource::make( $product ), Response::HTTP_CREATED );
+        return $this->successResponse( ProductResource::make( $product->load('options') ), Response::HTTP_CREATED );
     }
 
     /**

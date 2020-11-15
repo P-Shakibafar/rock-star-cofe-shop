@@ -9,6 +9,7 @@ class Product extends Model {
     use HasFactory;
 
     protected $guarded = [];
+    protected $with='options';
 
     public function addOption( Option $option )
     {

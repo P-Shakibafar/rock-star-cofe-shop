@@ -66,7 +66,7 @@ class OrderController extends ApiController {
             return $newOrder;
         } );
 
-        return $this->successResponse( OrderResource::make( $order ), Response::HTTP_CREATED );
+        return $this->successResponse( OrderResource::make( $order->load(['user','items']) ), Response::HTTP_CREATED );
     }
 
     /**

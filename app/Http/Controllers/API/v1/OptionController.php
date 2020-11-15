@@ -44,7 +44,7 @@ class OptionController extends ApiController {
             return $newOption;
         } );
 
-        return $this->successResponse( OptionResource::make( $option ), Response::HTTP_CREATED );
+        return $this->successResponse( OptionResource::make( $option->load('values') ), Response::HTTP_CREATED );
     }
 
     /**

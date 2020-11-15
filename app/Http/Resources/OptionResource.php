@@ -17,7 +17,7 @@ class OptionResource extends JsonResource {
         return [
             'id'     => $this->id,
             'name'   => $this->name,
-            'values' => ValueResource::collection( $this->values ),
+            'values' => ValueResource::collection( $this->whenLoaded('values') ),
         ];
     }
 }

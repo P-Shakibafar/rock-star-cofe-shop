@@ -13,6 +13,7 @@ class OrderItem extends Model {
         'options' => Json::class,
     ];
     protected $guarded = [];
+    protected $with    = 'product';
 
     protected static function boot()
     {

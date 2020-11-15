@@ -18,6 +18,7 @@ class Order extends Model {
     const READY       = 'ready';
     const DELIVERED   = 'delivered';
     protected $guarded = [];
+    protected $with    = ['user', 'items'];
 
     protected static function boot()
     {

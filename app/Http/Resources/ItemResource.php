@@ -19,7 +19,7 @@ class ItemResource extends JsonResource {
             'quantity'   => $this->quantity,
             'unit_price' => $this->unit_price,
             'options'    => $this->options,
-            'product'    => ProductResource::make( $this->product ),
+            'product'    => ProductResource::make( $this->whenLoaded('product') ),
         ];
     }
 }

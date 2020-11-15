@@ -18,8 +18,8 @@ class OrderResource extends JsonResource {
             'id'     => $this->id,
             'number' => $this->number,
             'status' => $this->status,
-            'user'   => UserResource::make( $this->user ),
-            'items'  => ItemResource::collection( $this->items ),
+            'user'   => UserResource::make( $this->whenLoaded( 'user' ) ),
+            'items'  => ItemResource::collection( $this->whenLoaded( 'items' ) ),
         ];
     }
 }
