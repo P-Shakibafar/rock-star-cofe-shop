@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder {
      */
     public function run()
     {
-        User::factory()->create( ['name' => 'admin', 'email' => 'admin@me.com'] );
+        User::factory()->create( ['name' => 'admin', 'email' => 'admin@me.com','is_admin'=>TRUE] );
         $this->call( OptionSeeder::class );
         $this->call( ProductSeeder::class );
     }

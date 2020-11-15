@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\ApiController;
 use Illuminate\Validation\ValidationException;
@@ -35,7 +36,7 @@ class SanctumController extends ApiController {
         $token = $user->createToken( $request->device_name )->plainTextToken;
 
         return $this->successResponse( [
-            'user'  => $user,
+            'user'  => UserResource::make( $user ),
             'token' => $token,
         ] );
     }
@@ -43,7 +44,6 @@ class SanctumController extends ApiController {
     /**
      * Validate and update the user's password.
      *
-     * @param mixed                    $user
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -85,7 +85,7 @@ class SanctumController extends ApiController {
             'password' => Hash::make( $attributes['password'] ),
         ] );
 
-        return $this->successResponse( $newUser, Response::HTTP_CREATED );
+        return $this->successResponse( UserResource::make( $newUser ), Response::HTTP_CREATED );
     }
 
     /**

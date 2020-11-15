@@ -40,6 +40,7 @@ Route::group( [
         // Product Routes
         Route::post( 'products', [ProductController::class, 'store'] )->name( 'products.store' );
         Route::patch( 'products/{product}', [ProductController::class, 'update'] )->name( 'products.update' );
+        Route::put( 'products/{product}', [ProductController::class, 'update'] )->name( 'products.update' );
         Route::delete( 'products/{product}', [ProductController::class, 'destroy'] )->name( 'products.destroy' );
         // Product option adding Routes
         Route::post( 'products/{product}/addOption', [ProductOptionController::class, 'store'] )->name( 'products.addOption' );
