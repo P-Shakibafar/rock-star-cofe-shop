@@ -4,9 +4,9 @@ namespace App\Http\Controllers\API\v1;
 
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Policies\OrderPolicy;
+use App\Http\Requests\OrderItemRequest;
 use App\Http\Controllers\API\ApiController;
 
 class OrderItemController extends ApiController {
@@ -14,24 +14,19 @@ class OrderItemController extends ApiController {
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Order        $order
-     * @param \App\Models\OrderItem    $orderItem
+     * @param \App\Http\Requests\OrderItemRequest $request
+     * @param \App\Models\Order                   $order
+     * @param \App\Models\OrderItem               $orderItem
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update( Request $request, Order $order, OrderItem $orderItem )
+    public function update( OrderItemRequest $request, Order $order, OrderItem $orderItem )
     {
         $this->authorize( OrderPolicy::UPDATE, $order );
         if( !$order->canBeUpdate() ) {
             return $this->errorResponse( 'when order status is not waiting can not updating.', Response::HTTP_BAD_REQUEST );
         }
-        $attributes = $request->validate( [
-            'quantity'        => ['sometimes', 'required', 'integer'],
-            'options'         => ['sometimes', 'required', 'array'],
-            'options.*.name'  => ['required', 'string', 'exists:options,name'],
-            'options.*.value' => ['required', 'string', 'exists:option_values,value'],
-        ] );
+        $attributes = $request->validated();
         $orderItem->update( $attributes );
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );

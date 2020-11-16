@@ -4,9 +4,9 @@ namespace App\Http\Controllers\API\v1;
 
 use DB;
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Policies\OrderPolicy;
+use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Controllers\API\ApiController;
 use function auth;
@@ -29,23 +29,13 @@ class OrderController extends ApiController {
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \App\Http\Requests\OrderRequest $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function store( Request $request )
+    public function store( OrderRequest $request )
     {
-        $attributes = $request->validate( [
-            'items'                   => ['required', 'array'],
-            'items.*'                 => [
-                'quantity'   => ['required', 'integer'],
-                'product_id' => ['required', 'integer', 'exists:products,id'],
-                'unit_price' => ['required', 'integer'],
-                'options'    => ['required', 'array'],
-            ],
-            'items.*.options.*.name'  => ['required', 'string', 'exists:options,name'],
-            'items.*.options.*.value' => ['required', 'string', 'exists:option_values,value'],
-        ] );
+        $attributes = $request->validated();
         $order      = DB::transaction( function () use ( $attributes ) {
             $items    = $attributes['items'];
             $newOrder = auth()->user()->addOrder( [
@@ -66,7 +56,7 @@ class OrderController extends ApiController {
             return $newOrder;
         } );
 
-        return $this->successResponse( OrderResource::make( $order->load(['user','items']) ), Response::HTTP_CREATED );
+        return $this->successResponse( OrderResource::make( $order->load( ['user', 'items'] ) ), Response::HTTP_CREATED );
     }
 
     /**
@@ -101,11 +91,9 @@ class OrderController extends ApiController {
      * @param \App\Models\Order        $order
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update( Request $request, Order $order )
+    public function update( OrderRequest $request, Order $order )
     {
-        $attributes = $request->validate( [
-            'status' => 'required|string',
-        ] );
+        $attributes = $request->validated();
         $order->update( ['status' => $attributes['status']] );
 
         return $this->successResponse( [], Response::HTTP_NO_CONTENT );

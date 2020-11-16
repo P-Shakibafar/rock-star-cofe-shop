@@ -35,10 +35,11 @@ class ManageOptionsTest extends TestCase {
             ],
         ],
     ];
+
     /** @test */
     public function unauthenticated_user_cannot_manage_options()
     {
-        $option    = Option::factory()->create();
+        $option     = Option::factory()->create();
         $normalUser = User::factory()->create();
         $this->getJson( route( 'v1.options.index' ) )
              ->assertStatus( 401 );
@@ -63,6 +64,7 @@ class ManageOptionsTest extends TestCase {
              ->deleteJson( route( 'v1.options.destroy', $option->id ) )
              ->assertStatus( 403 );
     }
+
     /** @test */
     public function an_admin_can_see_all_option()
     {
@@ -141,6 +143,6 @@ class ManageOptionsTest extends TestCase {
         $response   = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
                            ->postJson( route( 'v1.options.store' ), $attributes );
         $response->assertStatus( 422 );
-        $response->assertJsonStructure( ['errors' => [$field]] );
+        $response->assertJsonStructure( ['error' => [$field]] );
     }
 }

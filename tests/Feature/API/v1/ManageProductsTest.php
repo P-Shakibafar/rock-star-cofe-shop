@@ -146,6 +146,6 @@ class ManageProductsTest extends TestCase {
         $response   = $this->actingAs( User::factory()->create( ['is_admin' => TRUE] ) )
                            ->postJson( route( 'v1.products.store' ), $attributes );
         $response->assertStatus( 422 );
-        $response->assertJsonStructure( ['errors' => [$field]] );
+        $response->assertJsonStructure( ['error' => [$field]] );
     }
 }

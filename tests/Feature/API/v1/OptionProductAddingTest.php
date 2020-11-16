@@ -65,7 +65,7 @@ class OptionProductAddingTest extends TestCase {
                              'name' => 'notaoption',
                          ] );
         $response->assertStatus( 422 );
-        $response->assertJsonStructure( ['errors' => ['name']] );
+        $response->assertJsonStructure( ['error' => ['name']] );
     }
 
     /** @test */
@@ -77,6 +77,6 @@ class OptionProductAddingTest extends TestCase {
                              'name' => 'notaoption',
                          ] );
         $response->assertStatus( 422 );
-        $response->assertJsonStructure( ['errors' => ['name']] );
+        $response->assertJsonStructure( ['error' => ['name']] );
     }
 }

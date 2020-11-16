@@ -21,7 +21,9 @@ class ProductOptionController extends ApiController {
     {
         $request->validate( [
             'name' => ['required', 'exists:options,name'],
-        ] );
+        ] ,[
+            'name.exists' => 'the name you are adding must is a option.',
+        ]);
         $option = Option::whereName( $request->name )->first();
         $product->addOption( $option );
 
